@@ -1,0 +1,56 @@
+## 🧠 Cursor Copilot Development Guide
+
+### 🎯 Core Objective
+Build a **ChatGPT-like user experience**, with a modular architecture that supports future feature expansion by the admin. Design must be scalable, secure, and intuitive for both frontend users and backend systems.
+
+---
+
+### ✅ General Principles
+
+1. **Use Best Practices Always**
+   - All code must adhere to current best practices across frontend and backend.
+   - Backend logic should follow API security, async patterns, and maintainability.
+   - Frontend should use component-driven design, Svelte 5 conventions, and clean UI/UX principles.
+
+2. **Be Flexible and Context-Aware**
+   - Understand whether the task belongs to frontend or backend.
+   - Adjust logic style accordingly (e.g., reactive data stores for frontend vs event-based architecture for backend).
+
+3. **Reference the Right Docs**
+   | Domain       | Docs                                                                 |
+   |--------------|----------------------------------------------------------------------|
+   | Svelte 5     | https://github.com/sveltejs/rfcs/pull/52                            |
+   | FastAPI      | https://fastapi.tiangolo.com/deployment/                            |
+   | Firebase     | https://firebase.google.com/docs/admin/setup                         |
+   | GCS (Python) | https://cloud.google.com/python/docs/reference/storage/latest       |
+   | RunPod       | https://docs.runpod.io/docs/intro                                    |
+   | Ollama       | https://ollama.com/docs                                              |
+
+4. **Understand the Project Goal**
+   - Build a production-ready chat interface powered by LLMs
+   - Ensure the design supports future tools like: Idea Enhancer, Idea Protector, Blockchain Record Generator
+   - Facilitate tiered features (free, $20.89, $60, $300)
+   - Respect user data integrity and chat history continuity
+
+---
+
+### 🧱 Folder Conventions
+
+- `/backend/` → FastAPI logic: `main.py`, `auth.py`, `llm.py`, etc.
+- `/frontend/` → SvelteKit frontend: Chat interface, animations, UI state
+- `/docs/` → Development standards, dev notes, future planning
+- `/scripts/` or `/tools/` → Dev utilities, RunPod automations, setup tools
+
+---
+
+### 🔒 Sensitive Info Handling
+- Never commit `.env`, service keys, or secrets
+- Use `FIREBASE_CREDENTIAL_PATH` and Docker volumes for secrets
+
+---
+
+### 📦 Admin Roadmap
+- Admin will systematically roll out new features
+- All components must be modular, scalable, and easy to integrate into existing architecture
+- New ideas must be evaluated for collisions and optionally enhanced for uniqueness
+

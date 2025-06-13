@@ -1,0 +1,29 @@
+{
+    "name": "Arcano A40 Template",
+    "dockerImageName": "truzillah/arcano:latest",
+    "containerPort": 3000,
+    "volumeMounts": [
+        {
+            "hostPath": "/root/.ollama",
+            "containerPath": "/root/.ollama"
+        }
+    ],
+    "env": [
+        {
+            "name": "OLLAMA_HOST",
+            "value": "0.0.0.0"
+        },
+        {
+            "name": "OLLAMA_ORIGINS",
+            "value": "*"
+        }
+    ],
+    "startupScript": "/app/run.sh",
+    "gpuCount": 1,
+    "gpuTypeId": "NVIDIA A40",
+    "volumeInGb": 50,
+    "containerDiskInGb": 20,
+    "ports": "3000/http,11434/http",
+    "isPublic": false,
+    "isServerless": false
+} 

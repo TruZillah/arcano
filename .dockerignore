@@ -1,0 +1,31 @@
+# Node.js
+frontend/node_modules
+frontend/.svelte-kit
+frontend/build
+frontend/dist
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Other
+*.log
+.DS_Store 

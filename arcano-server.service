@@ -1,0 +1,13 @@
+[Unit]
+Description=Arcano LLM Server
+After=network.target
+
+[Service]
+WorkingDirectory=/home/ubuntu/app
+ExecStart=/usr/bin/env bash run.sh
+Restart=always
+User=ubuntu
+Environment=FIREBASE_CREDENTIAL_PATH=/app/serviceAccountKey.json
+
+[Install]
+WantedBy=multi-user.target 
