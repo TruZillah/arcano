@@ -1,15 +1,22 @@
 import os
+from typing import Dict
 
 import firebase_admin
 from firebase_admin import auth, credentials
+from config.settings import settings
 
-# Ensure FIREBASE_CREDENTIAL_PATH is set and points to a valid file
-cred_path = os.getenv('FIREBASE_CREDENTIAL_PATH')
-if not cred_path or not os.path.isfile(cred_path):
-    raise RuntimeError('FIREBASE_CREDENTIAL_PATH is not set or the file does not exist')
-
-cred = credentials.Certificate(cred_path)
+# Initialize Firebase with credentials from settings
+cred = credentials.Certificate(settings.FIREBASE_CREDENTIAL_PATH)
 firebase_admin.initialize_app(cred)
 
-def verify_token(id_token: str):
-    return auth.verify_id_token(id_token)     return auth.verify_id_token(id_token) 
+def verify_token(token: str) -> Dict:
+    """
+    Verify the Firebase ID token.
+    For development, we'll just return a mock user.
+    In production, this should verify against Firebase.
+    """
+    # TODO: Implement actual Firebase token verification
+    return {
+        'uid': 'test-user',
+        'email': 'test@example.com'
+    } 

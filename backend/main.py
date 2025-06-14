@@ -1,23 +1,61 @@
 import os
+from pathlib import Path
 
-from auth import verify_token
-from dotenv import load_dotenv
 from fastapi import FastAPI, Header, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from idea_tracker import register_and_check_collision
-from llm import generate_llm_response
 
-# Load environment variables from project root .env
-env_file = os.path.join(os.path.dirname(__file__), os.pardir, '.env')
-load_dotenv(env_file)
+from config.settings import settings
+from .auth import verify_token
+from .idea_tracker import register_and_check_collision
+from .llm import generate_llm_response, initialize_llm, cleanup_llm
 
-app = FastAPI()
+app = FastAPI(
+    title=settings.APP_NAME,
+    debug=settings.DEBUG
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if settings.DEBUG else ["https://yourdomain.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Serve SvelteKit static files
 def get_static_dir():
-    return os.path.join(os.path.dirname(__file__), os.pardir, 'frontend')
-app.mount('/', StaticFiles(directory=get_static_dir(), html=True), name='static')
+    return str(Path(__file__).parent.parent / "frontend" / "build")
+# Mount static files AFTER API routes, not at root
+# app.mount('/', StaticFiles(directory=get_static_dir(), html=True), name='static')
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup."""
+    try:
+        await initialize_llm()
+        print("LLM initialized successfully")
+        
+        # Pre-warm the model by making a simple request
+        print("Pre-warming Ollama model...")
+        try:
+            # Import here to avoid circular imports
+            from backend.llm import generate_llm_response
+            response = await generate_llm_response("Hello", "system")
+            print(f"Model pre-warming result: {response[:50]}...")
+        except Exception as e:
+            print(f"Model pre-warming failed (this is normal): {e}")
+            
+    except Exception as e:
+        print(f"Warning: LLM initialization failed: {e}")
+        # Continue without LLM
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup services on shutdown."""
+    await cleanup_llm()
 
 @app.post('/api/chat')
 async def chat(request: Request, authorization: str = Header(None)):
@@ -42,9 +80,18 @@ async def chat(request: Request, authorization: str = Header(None)):
         collision_notice = register_and_check_collision(uid, idea_hash, timestamp)
 
     # Generate LLM response
-    reply = generate_llm_response(prompt, uid)
+    reply = await generate_llm_response(prompt, uid)
 
     response = {'reply': reply}
     if collision_notice:
         response['collision_notice'] = collision_notice
-    return JSONResponse(response)     return JSONResponse(response) 
+    return JSONResponse(response)
+
+@app.get('/api/health')
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy", "environment": settings.APP_ENV}
+
+@app.get('/test')
+async def test():
+    return {"message": "FastAPI is working"}

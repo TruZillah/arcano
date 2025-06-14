@@ -1,19 +1,20 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-auto';
+import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	kit: {
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: 'index.html',
-			precompress: false,
-			strict: true
-		}),
-		paths: {
-			base: ''
+		adapter: adapter(),
+		alias: {
+			$lib: 'src/lib'
 		}
-	}
+	},
+	preprocess: [
+		preprocess({
+			postcss: true,
+			typescript: true
+		})
+	]
 };
 
 export default config; 

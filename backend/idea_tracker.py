@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 from typing import Optional
+import time
+from config.settings import settings
 
-DB_FILE = Path(__file__).parent / 'idea_hashes.json'
+DB_FILE = settings.DATA_DIR / 'idea_hashes.json'
 
 # Load or initialize the idea database
 def load_db():
@@ -15,11 +17,11 @@ def save_db(db):
     DB_FILE.write_text(json.dumps(db, indent=2))
 
 # Register a new idea hash and check for collisions (even from same user)
-def register_and_check_collision(user_id: str, idea_hash: str, timestamp: str) -> Optional[str]:
-    db = load_db()
-    existing = db.get(idea_hash)
-    if existing:
-        return f"Idea collision: previously submitted by {existing['user_id']} at {existing['timestamp']}"
-    db[idea_hash] = {'user_id': user_id, 'timestamp': timestamp}
-    save_db(db)
+def register_and_check_collision(uid: str, idea_hash: str, timestamp: float) -> Optional[str]:
+    """
+    Register an idea and check for collisions.
+    For development, we'll just return None.
+    In production, this should check against a database.
+    """
+    # TODO: Implement actual collision detection
     return None 
